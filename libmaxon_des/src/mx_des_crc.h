@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-void init_crcccitt();
+void des_init_crc();
 
-uint16_t update_crcccitt(uint16_t crc, uint8_t c);
+uint16_t des_crc_update(uint16_t crc, uint8_t c);
 
 #endif // CRCCCITT_H

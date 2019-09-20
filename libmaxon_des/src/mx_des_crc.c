@@ -1,10 +1,10 @@
-#include "crcccitt.h"
+#include "mx_des_crc.h"
 
 #define P_CCITT 0x1021
 static int crc_tabccitt_init = 0;
 static unsigned short crc_tabccitt[256];
 
-void init_crcccitt()
+void des_init_crc()
 {
 
     int i, j;
@@ -32,7 +32,7 @@ void init_crcccitt()
     crc_tabccitt_init = 1;
 }
 
-uint16_t update_crcccitt(uint16_t crc, uint8_t c)
+uint16_t des_crc_update(uint16_t crc, uint8_t c)
 {
 
     uint16_t tmp, short_c;
