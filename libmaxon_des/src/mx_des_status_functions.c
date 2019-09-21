@@ -1,10 +1,4 @@
-#include "mx_des.h"
-#include "mx_des_comm.h"
 #include "mx_des_functions.h"
-
-#include <stdlib.h>
-#include <memory.h>
-#include <assert.h>
 
 DES_FN_NO_PARAM_RET_STATUS_STRUCT(des_read_sys_status, 0x01, des_sys_status);
 

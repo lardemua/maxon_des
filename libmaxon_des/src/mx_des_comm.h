@@ -5,8 +5,7 @@
 
 #include "mx_des.h"
 
-typedef struct
-{
+typedef struct {
     uint8_t opcode;
     uint8_t len;
     uint16_t *data;

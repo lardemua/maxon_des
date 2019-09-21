@@ -140,6 +140,9 @@ typedef enum
     DES_COMM_ACK_UNDEFINED,
     DES_RECEIVE_BAD_OPCODE,
     DES_RECEIVE_BAD_CRC,
+
+    // Functions errors
+    DES_BAD_RESPONSE,
 } des_error;
 
 des_context *des_init(des_init_params *params);
@@ -160,7 +163,7 @@ des_error des_enable(des_context *context, bool status);
 
 /// Service functions
 
-des_error des_service(des_context *context, const char password[4]);
+des_error des_service(des_context *context, const char password[4], bool *success);
 
 des_error des_set_addr_var(des_context *context, uint16_t address, bool lword, uint32_t value);
 

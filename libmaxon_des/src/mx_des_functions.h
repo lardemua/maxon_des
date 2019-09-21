@@ -1,26 +1,58 @@
 #ifndef MX_DES_FUNCTIONS_H
 #define MX_DES_FUNCTIONS_H
 
-#define DES_FN_NO_PARAM_NO_RET(NAME, OPCODE)   \
-    des_error NAME(des_context *context)       \
-    {                                          \
-        assert(context != NULL);               \
-                                               \
-        des_frame frame = {                    \
-            .opcode = OPCODE,                  \
-            .len = 0,                          \
-            .data = NULL,                      \
-        };                                     \
-                                               \
-        des_error err;                         \
-                                               \
-        err = des_send_frame(context, &frame); \
-        if (err)                               \
-        {                                      \
-            return err;                        \
-        }                                      \
-                                               \
-        return DES_OK;                         \
+#include <stdlib.h>
+#include <memory.h>
+#include <assert.h>
+#include <stdio.h>
+
+#include "mx_des.h"
+#include "mx_des_comm.h"
+
+#define ___SEND_FRAME(OPCODE, LEN, ...)                \
+    {                                                  \
+        des_frame frame;                               \
+        frame.opcode = (uint8_t)OPCODE;                \
+        frame.len = LEN;                               \
+        if (frame.len > 0)                             \
+            frame.data = (uint16_t[LEN]){__VA_ARGS__}; \
+        else                                           \
+            frame.data = NULL;                         \
+                                                       \
+        des_error err;                                 \
+                                                       \
+        err = des_send_frame(context, &frame);         \
+        if (err)                                       \
+        {                                              \
+            return err;                                \
+        }                                              \
+    }
+
+#define __RECEIVE_FRAME(frame)                              \
+    {                                                       \
+        des_error err = des_receive_frame(context, &frame); \
+        if (err)                                            \
+        {                                                   \
+            return err;                                     \
+        }                                                   \
+    }
+
+#define __VALIDATE_FRAME(FRAME, LEN) \
+    {                                \
+        if (FRAME.len != LEN)        \
+        {                            \
+            return -1;               \
+        }                            \
+    }
+
+#define DES_FN_NO_PARAM_NO_RET(NAME, OPCODE) \
+    des_error NAME(des_context *context)     \
+    {                                        \
+        assert(context != NULL);             \
+                                             \
+        ___SEND_FRAME(OPCODE, 0)             \
+                                             \
+        return DES_OK;                       \
     }
 
 #define DES_FN_ONE_PARAM_NO_RET(NAME, OPCODE, PARAM_TYPE, PARAM_NAME, PARAM_FN) \
@@ -28,19 +60,7 @@
     {                                                                           \
         assert(context != NULL);                                                \
                                                                                 \
-        des_frame frame = {                                                     \
-            .opcode = OPCODE,                                                   \
-            .len = 1,                                                           \
-            .data = (uint16_t[1]){PARAM_FN},                                    \
-        };                                                                      \
-                                                                                \
-        des_error err;                                                          \
-                                                                                \
-        err = des_send_frame(context, &frame);                                  \
-        if (err)                                                                \
-        {                                                                       \
-            return err;                                                         \
-        }                                                                       \
+        ___SEND_FRAME(OPCODE, 1, PARAM_FN)                                      \
                                                                                 \
         return DES_OK;                                                          \
     }
@@ -51,31 +71,36 @@
         assert(context != NULL);                                  \
         assert(output != NULL);                                   \
                                                                   \
-        des_frame frame = {                                       \
-            .opcode = OPCODE,                                     \
-            .len = 0,                                             \
-            .data = NULL,                                         \
-        };                                                        \
+        ___SEND_FRAME(OPCODE, 0);                                 \
                                                                   \
-        des_error err;                                            \
+        des_frame frame;                                          \
                                                                   \
-        err = des_send_frame(context, &frame);                    \
-        if (err)                                                  \
-        {                                                         \
-            return err;                                           \
-        }                                                         \
+        __RECEIVE_FRAME(frame)                                    \
                                                                   \
-        err = des_receive_frame(context, &frame);                 \
-        if (err)                                                  \
-        {                                                         \
-            return err;                                           \
-        }                                                         \
+        __VALIDATE_FRAME(frame, 1)                                \
                                                                   \
-        if (frame.len != 1)                                       \
-        {                                                         \
-            return -1;                                            \
-        }                                                         \
         output->value = frame.data[0];                            \
+                                                                  \
+        free(frame.data);                                         \
+                                                                  \
+        return DES_OK;                                            \
+    }
+
+#define DES_FN_NO_PARAM_RET_STRUCT(NAME, OPCODE, RET_STRUCT, LEN) \
+    des_error NAME(des_context *context, RET_STRUCT *output)      \
+    {                                                             \
+        assert(context != NULL);                                  \
+        assert(output != NULL);                                   \
+                                                                  \
+        ___SEND_FRAME(OPCODE, 0);                                 \
+                                                                  \
+        des_frame frame;                                          \
+                                                                  \
+        __RECEIVE_FRAME(frame)                                    \
+                                                                  \
+        __VALIDATE_FRAME(frame, LEN)                              \
+                                                                  \
+        memcpy(output, frame.data, LEN * 2);                      \
                                                                   \
         free(frame.data);                                         \
                                                                   \
