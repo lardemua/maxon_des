@@ -6,24 +6,9 @@ project(libmaxon_des
 
 option(ENABLE_TESTS "Perform unit tests" OFF)
 
-add_library(maxon_des
-        src/mx_des.c
-        src/mx_des_functions.c
-        src/mx_des_status_functions.c
-        src/mx_des_parameter_functions.c
-        src/mx_des_service_functions.c
-        src/mx_des_crc.c
-        src/mx_des_comm.c)
+add_subdirectory(src)
 
-target_include_directories(maxon_des
-        PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-        )
-
-target_link_libraries(maxon_des)
+add_subdirectory(cmd)
 
 if (ENABLE_TESTS)
   find_package(CMocka CONFIG REQUIRED)
