@@ -98,7 +98,7 @@ static void test_des_reset(void **ctx)
     assert_int_equal(err, DES_OK);
 }
 
-int main(void)
+int main()
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_des_read_sys_status),

@@ -4,11 +4,14 @@ project(libmaxon_des
         VERSION 0.1.0
         LANGUAGES C)
 
-option(ENABLE_TESTS "Perform unit tests" OFF)
+option(BUILD_CMD    "Build the cli command" ON)
+option(ENABLE_TESTS "Perform unit tests" ON)
 
 add_subdirectory(src)
 
-add_subdirectory(cmd)
+if(BUILD_CMD)
+  add_subdirectory(cmd)
+endif(BUILD_CMD)
 
 if (ENABLE_TESTS)
   find_package(CMocka CONFIG REQUIRED)

@@ -17,7 +17,6 @@ des_error des_init_comm(des_context *context, const char *portname)
     assert(portname != NULL);
 
     int port = open(portname, O_RDWR | O_NONBLOCK);
-    tcflush(port, TCIFLUSH);
 
     if (port)
     {
@@ -77,14 +76,22 @@ des_error des_write_data(des_context *context, uint16_t *data, int len)
     assert(data != NULL);
     assert(len >= 0);
 
-    int err = DES_OK;
+    des_error err;
 
+    uint8_t tmp[len * 2];
     for (int i = 0; i < len; i++)
     {
-        err = des_write_word(context, data[i]);
+        tmp[i * 2] = data[i];
+        tmp[i * 2 + 1] = data[i] >> 8;
     }
 
-    return err;
+    int n = write(context->port, tmp, len * 2);
+    if (n != len * 2)
+    {
+        return DES_COMM_ERROR;
+    }
+
+    return DES_OK;
 }
 
 des_error des_read_byte(des_context *context, uint8_t *data)
