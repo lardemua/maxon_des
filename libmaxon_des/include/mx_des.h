@@ -180,6 +180,17 @@ des_error des_clear_errors(des_context *context);
 
 des_error des_reset(des_context *context);
 
+/**
+ * Sets the system into enable and disabled state.
+ * 
+ * Set the system into the enabled or disabled state. The DES has to be configured
+ * for a software setting of Enable. If the hardware Enable is activated this
+ * command has no effect.
+ * 
+ * @param context the DES context
+ * @param state the enable (true) or disable (false) to set.
+ * @return the result error, if occurred
+ */
 des_error des_enable(des_context *context, bool state);
 
 /// Service functions
