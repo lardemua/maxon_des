@@ -41,7 +41,7 @@
     {                                \
         if (FRAME.len != LEN)        \
         {                            \
-            return -1;               \
+            return DES_BAD_RESPONSE; \
         }                            \
     }
 

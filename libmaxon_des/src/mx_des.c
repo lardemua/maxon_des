@@ -16,6 +16,7 @@ des_context *des_init(des_init_params *params)
     if (err)
     {
         free(context);
+        printf("error init comm\n");
         return NULL;
     }
 

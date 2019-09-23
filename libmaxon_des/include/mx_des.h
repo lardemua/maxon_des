@@ -66,10 +66,31 @@ typedef union {
     } flags;
 } des_sys_errors;
 
+typedef union {
+    uint16_t value;
+    struct
+    {
+        bool speed_current_setting : 1;
+        bool acceleration_config : 1;
+        bool current_regulator : 1;
+        bool speed_regulator : 1;
+        bool monitor_input_signal : 1;
+        uint8_t __reserved : 2;
+        bool stop_motor_config : 1;
+        bool maximum_speed_config : 1;
+        bool maximum_current_config : 1;
+        bool regulation_gains_config : 1;
+        bool enable_system_config : 1;
+        bool monitor_config : 1;
+        bool service_mode_config : 1;
+        bool regulation_mode_config : 1;
+    } flags;
+} des_sys_config;
+
 typedef struct
 {
     uint16_t baudrate;
-    uint16_t sys_config;
+    des_sys_config sys_config;
 
     uint16_t current_regulation_pgain;
     uint16_t current_regulation_igain;
@@ -159,7 +180,7 @@ des_error des_clear_errors(des_context *context);
 
 des_error des_reset(des_context *context);
 
-des_error des_enable(des_context *context, bool status);
+des_error des_enable(des_context *context, bool state);
 
 /// Service functions
 
