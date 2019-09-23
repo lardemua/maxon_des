@@ -1,7 +1,6 @@
 #include "mx_des_comm.h"
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <memory.h>
 #include <termios.h>
 #include <sys/ioctl.h>
@@ -172,7 +171,6 @@ des_error des_ack(des_context *context)
 
     if (ack != 'O')
     {
-        printf("[error] des_ack: ack == %c\n", ack);
         return ack == 'F'
                    ? DES_COMM_ACK_FAIL
                    : DES_COMM_ACK_UNDEFINED;
@@ -212,8 +210,6 @@ des_error des_send_frame(des_context *context, des_frame *frame)
         frame->data = (uint16_t[1]){0x00};
     }
     uint16_t crc = calculate_crc(frame);
-
-    printf("[debug] des_send_frame: sending frame with opcode %x and len %d and crc = %x\n", frame->opcode, frame->len, crc);
 
     des_error err = DES_OK;
 
@@ -280,13 +276,6 @@ des_error des_receive_frame(des_context *context, des_frame *frame)
     if (err)
         return err;
 
-    printf("[debug] des_receive_frame: received frame: op = %d, len = %d, data = { ", frame->opcode, frame->len);
-    for (int i = 0; i < frame->len; i++)
-    {
-        printf("%x ", frame->data[i]);
-    }
-    printf("}\n");
-
     // check the crc and acknoledge
     uint16_t crc;
     err = des_read_word(context, &crc);
@@ -296,8 +285,6 @@ des_error des_receive_frame(des_context *context, des_frame *frame)
     if (crc != ccrc)
     {
         des_write_byte(context, 'F');
-
-        printf("[error] des_receive_frame: bad crc: 0x%x != 0x%x\n", crc, ccrc);
         return DES_RECEIVE_BAD_CRC;
     }
     err = des_write_byte(context, 'O');

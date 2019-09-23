@@ -1,41 +1,60 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "mx_des.h"
 
-int main()
+#include "cmd.h"
+
+int main(int argc, char **argv)
 {
     des_init_params params;
-    params.port = "/dev/ttyUSB0";
+    params.port = "/dev/ttyUSB1";
 
-    des_context *context = des_init(&params);
-    if (context == NULL)
+    des_context *des_context = des_init(&params);
+    if (des_context == NULL)
     {
-        printf("error initializing context\n");
+        log_fatal("error initializing context\n");
         exit(-1);
     }
 
-    // des_sys_errors errors;
+    cmd_context context;
+    context.des = des_context;
 
-    // des_error err = des_read_sys_errors(context, &errors);
-    // if (err)
-    // {
-    //     printf("error reading errors: %d\n", err);
-    //     exit(-1);
-    // }
+    if (argc < 2)
+    {
+        return 0;
+    }
 
-    // printf("errors: %x\n", errors.value);
-    // printf("  hall_sensor = %d\n", errors.flags.hall_sensor);
-    // printf("  index_processing = %d\n", errors.flags.index_processing);
-    // printf("  encoder_resolution = %d\n", errors.flags.encoder_resolution);
-    // printf("  hall_sensor_not_found = %d\n", errors.flags.hall_sensor_not_found);
-    // printf("  over_current = %d\n", errors.flags.over_current);
-    // printf("  over_voltage = %d\n", errors.flags.over_voltage);
-    // printf("  over_speed = %d\n", errors.flags.over_speed);
-    // printf("  supply_voltage_low = %d\n", errors.flags.supply_voltage_low);
-    // printf("  angle_detection = %d\n", errors.flags.angle_detection);
-    // printf("  parameter_out_of_range = %d\n", errors.flags.parameter_out_of_range);
-    // printf("  errors = %d\n", errors.flags.errors);
+    if (strcmp(argv[1], "speed") == 0)
+    {
+        if (argc != 3)
+        {
+            printf("missing the speed value.\n");
+            return -1;
+        }
+
+        int speed = atoi(argv[2]);
+
+        cmd_speed(&context, speed);
+    }
+    else if (strcmp(argv[1], "stop") == 0)
+    {
+        cmd_stop(&context);
+    }
+    else if (strcmp(argv[1], "reset") == 0)
+    {
+        cmd_reset(&context);
+    }
+    else if (strcmp(argv[1], "enable") == 0)
+    {
+        cmd_enable(&context);
+    }
+
+    // cmd_version(&context);
+    // cmd_errors(&context);
+
+    // cmd_speed(&context, 0);
 
     // des_sys_status status;
     // status.value = 0x01;
@@ -101,31 +120,27 @@ int main()
 
     // des_clear_errors(context);
 
-    des_error err;
-    err = des_enable(context, true);
-    if (err)
-    {
-        printf("error enabling board: %d\n", err);
-        exit(-1);
-    }
-    printf("enable succeded\n");
+    // err = des_reset(context);
+    // if (err)
+    // {
+    //     printf("error resetting context: %d\n", err);
+    // }
 
-    err = des_set_velocity(context, 1000);
-    if (err)
-    {
-        printf("error setting velocity: %d\n", err);
+    // err = des_enable(context, true);
+    // if (err)
+    // {
+    //     printf("error enabling board: %d\n", err);
+    //     exit(-1);
+    // }
+    // printf("enable succeded\n");
 
-        exit(-1);
-    }
-    printf("setting velocity succeded!!!\n");
+    // err = des_stop_motion(context);
 
-    err = des_stop_motion(context);
-
-    if (err)
-    {
-        printf("error stopping: %d\n", err);
-        exit(-1);
-    }
+    // if (err)
+    // {
+    //     printf("error stopping: %d\n", err);
+    //     exit(-1);
+    // }
 
     return 0;
 }

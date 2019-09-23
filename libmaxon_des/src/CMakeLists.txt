@@ -16,3 +16,6 @@ target_include_directories(maxon_des
     ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_link_libraries(maxon_des)
+
+install(TARGETS maxon_des
+        ARCHIVE DESTINATION lib)
