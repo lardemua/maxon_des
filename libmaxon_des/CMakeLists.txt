@@ -5,7 +5,7 @@ project(libmaxon_des
         LANGUAGES C)
 
 option(BUILD_CMD    "Build the cli command" ON)
-option(ENABLE_TESTS "Perform unit tests" ON)
+option(ENABLE_TESTS "Perform unit tests" OFF)
 
 add_subdirectory(src)
 
