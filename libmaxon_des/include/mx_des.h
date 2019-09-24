@@ -203,9 +203,9 @@ des_error des_read_addr_var(des_context *context, uint16_t address, bool lword, 
 
 /// System parameter functions
 
-des_error des_set_temp_param(des_context *context, uint16_t paramNb, bool dataFormat, uint32_t value);
+des_error des_set_temp_param(des_context *context, uint16_t paramNb, uint16_t value);
 
-des_error des_read_temp_param(des_context *context, uint16_t paramNb, bool dataFormat);
+des_error des_read_temp_param(des_context *context, uint16_t paramNb);
 
 des_error des_reset_temp_param(des_context *context);
 
