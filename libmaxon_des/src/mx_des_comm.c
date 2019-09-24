@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <memory.h>
+#include <time.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -10,7 +11,7 @@
 
 #include "mx_des_crc.h"
 
-des_error des_init_comm(des_context *context, const char *portname)
+int des_init_comm(des_context *context, const char *portname)
 {
     assert(context != NULL);
     assert(portname != NULL);
@@ -19,7 +20,7 @@ des_error des_init_comm(des_context *context, const char *portname)
 
     if (port < 0)
     {
-        return DES_COMM_INIT_ERROR;
+        return -1;
     }
 
     struct termios params = {
@@ -30,12 +31,17 @@ des_error des_init_comm(des_context *context, const char *portname)
     int err = tcsetattr(port, TCSANOW, &params);
     if (err)
     {
-        return DES_COMM_INIT_ERROR;
+        return -1;
     }
 
     context->port = port;
 
     return DES_OK;
+}
+
+void des_quit_comm(des_context *context)
+{
+    close(context->port);
 }
 
 des_error des_write_byte(des_context *context, uint8_t data)
@@ -98,12 +104,12 @@ des_error des_read_byte(des_context *context, uint8_t *data)
     assert(context != NULL);
     assert(data != NULL);
 
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < context->retries; i++)
     {
         int n = read(context->port, data, 1);
         if (n == 1)
             return DES_OK;
-        usleep(5000);
+        usleep(context->sleep);
     }
 
     return DES_READ_TIMEOUT;
@@ -118,22 +124,23 @@ des_error des_read_word(des_context *context, uint16_t *data)
 
     uint8_t tmp[2];
 
-    for (int i = 0; i < 50; i++)
+    for (int i = 0; i < context->retries; i++)
     {
-        int n = read(context->port, &tmp[2 - remaining], remaining);
+        remaining -= read(context->port, &tmp[2 - remaining], remaining);
 
-        if (n == remaining)
-        {
-            *data = (tmp[0]) | (tmp[1] << 8);
-            return DES_OK;
-        }
+        if (remaining == 0)
+            break;
 
-        remaining -= n;
-
-        usleep(5000);
+        usleep(context->sleep);
     }
 
-    return DES_READ_TIMEOUT;
+    if (remaining != 0)
+    {
+        return DES_READ_TIMEOUT;
+    }
+
+    *data = (tmp[0]) | (tmp[1] << 8);
+    return DES_OK;
 }
 
 des_error des_read_data(des_context *context, uint16_t *data, int len)
@@ -142,12 +149,23 @@ des_error des_read_data(des_context *context, uint16_t *data, int len)
     assert(data != NULL);
     assert(len >= 0);
 
-    usleep(20000);
+    int remaining = len * 2;
     uint8_t tmp[len * 2];
 
-    int n = read(context->port, tmp, len * 2);
-    if (n != len * 2)
-        return DES_READ_ERROR;
+    for (int i = 0; i < context->retries; i++)
+    {
+        remaining -= read(context->port, tmp, len * 2);
+
+        if (remaining == 0)
+        {
+            break;
+        }
+
+        usleep(context->sleep);
+    }
+
+    if (remaining != 0)
+        return DES_READ_TIMEOUT;
 
     for (int i = 0; i < len; i++)
     {
@@ -173,7 +191,7 @@ des_error des_ack(des_context *context)
     {
         return ack == 'F'
                    ? DES_COMM_ACK_FAIL
-                   : DES_COMM_ACK_UNDEFINED;
+                   : DES_BAD_RESPONSE;
     }
 
     return DES_OK;

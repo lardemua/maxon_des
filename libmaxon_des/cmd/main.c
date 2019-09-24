@@ -9,9 +9,9 @@
 int main(int argc, char **argv)
 {
     des_init_params params;
-    params.port = "/dev/ttyUSB1";
+    char *port = "/dev/ttyUSB1";
 
-    des_context *des_context = des_init(&params);
+    des_context *des_context = des_init(port, NULL);
     if (des_context == NULL)
     {
         log_fatal("error initializing context\n");

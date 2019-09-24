@@ -1,3 +1,10 @@
+/**
+ * @file mx_des.h
+ * @version 0.1
+ * @date 2019-09-23
+ * 
+ */
+
 #ifndef MAXON_DES_H
 #define MAXON_DES_H
 
@@ -6,14 +13,15 @@
 
 typedef struct
 {
-    const char *port;
-    int timeout;
+    int sleep;
     int retries;
 } des_init_params;
 
 typedef struct
 {
     int port;
+    int sleep;
+    int retries;
 } des_context;
 
 typedef struct
@@ -148,29 +156,25 @@ typedef struct
 typedef enum
 {
     DES_OK = 0,
-
-    // Initialization errors
-    DES_COMM_INIT_ERROR,
-
-    // Communication errors
     DES_COMM_ERROR,
     DES_READ_ERROR,
     DES_WRITE_ERROR,
     DES_READ_TIMEOUT,
     DES_COMM_ACK_FAIL,
-    DES_COMM_ACK_UNDEFINED,
     DES_RECEIVE_BAD_OPCODE,
     DES_RECEIVE_BAD_CRC,
-
-    // Functions errors
     DES_BAD_RESPONSE,
 } des_error;
 
-des_context *des_init(des_init_params *params);
+des_context *des_init(char *port, des_init_params *params);
 
 void des_quit(des_context *context);
 
+char *des_strerror(des_error error);
+
+///
 /// Status functions
+///
 
 des_error des_read_sys_status(des_context *context, des_sys_status *status);
 
@@ -181,7 +185,7 @@ des_error des_clear_errors(des_context *context);
 des_error des_reset(des_context *context);
 
 /**
- * Sets the system into enable and disabled state.
+ * @brief Sets the system into enable and disabled state.
  * 
  * Set the system into the enabled or disabled state. The DES has to be configured
  * for a software setting of Enable. If the hardware Enable is activated this

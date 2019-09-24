@@ -5,13 +5,16 @@
 
 #include "mx_des.h"
 
-typedef struct {
+typedef struct
+{
     uint8_t opcode;
     uint8_t len;
     uint16_t *data;
 } des_frame;
 
-des_error des_init_comm(des_context *context, const char *portname);
+int des_init_comm(des_context *context, const char *portname);
+
+void des_quit_comm(des_context *context);
 
 des_error des_write_byte(des_context *context, uint8_t data);
 
