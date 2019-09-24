@@ -29,7 +29,12 @@ void cmd_clear_errors(cmd_context *context);
 
 //Parameters commands
 void cmd_version(cmd_context *context);
-void cmd_read_tmp_param(cmd_context *context, char * param);
+void cmd_read_temp_param(cmd_context *context, char * param);
+void cmd_set_temp_param (cmd_context *context, char *param, int value);
+void cmd_reset_temp_param(cmd_context *context);
+void cmd_save_temp_param(cmd_context *context);
+void cmd_read_all_temp_param(cmd_context *context);
+void cmd_set_default_param(cmd_context *context);
 
 //Setting commands
 void cmd_speed(cmd_context *context, int speed);

@@ -52,16 +52,45 @@ int main(int argc, char **argv)
     {
         cmd_version(&context);
     }
-    else if (strcmp(argv[1], "param") == 0)
+    else if (strcmp(argv[1], "get_param") == 0)
     {
         if (argc != 3)
         {
-            printf("missing the speed value.\n");
+            printf("missing the param name.\n");
             return -1;
         }
         char *param;
-        strcpy(param,argv[2]);
-        cmd_read_tmp_param(&context, param);
+        param = argv[2];
+        cmd_read_temp_param(&context, param);
+    }
+    else if (strcmp(argv[1], "set_param") == 0)
+    {
+        if (argc != 4)
+        {
+            printf("missing the param value or the param name.\n");
+            return -1;
+        }
+        char *param;
+        int value;
+        param = argv[2];
+        value = atoi(argv[3]);
+        cmd_set_temp_param(&context, param, value);
+    }
+    else if (strcmp(argv[1], "reset_temp_params") == 0)
+    {
+        cmd_reset_temp_param(&context);
+    }
+    else if (strcmp(argv[1], "save_temp_params") == 0)
+    {
+        cmd_save_temp_param(&context);
+    }
+    else if (strcmp(argv[1], "read_temp_param") == 0)
+    {
+        cmd_read_all_temp_param(&context);
+    }
+    else if(strcmp(argv[1], "set_param_default") == 0)
+    {
+        cmd_set_default_param(&context);
     }
     //Setting commands:
     else if (strcmp(argv[1], "speed") == 0)
@@ -93,6 +122,13 @@ int main(int argc, char **argv)
     {
         cmd_stop(&context);
     }
+    ///////////////////////////////////////////////////////////////////////////////////
+    else
+    {
+        printf("This command does not exist in the command list. Check the help.\n");
+        return 0;
+    }
+    
 
     // cmd_version(&context);
     // cmd_errors(&context);
