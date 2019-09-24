@@ -12,7 +12,7 @@ des_error des_service(des_context *context, const char password[4], bool *succes
 
     des_frame frame;
 
-    __RECEIVE_FRAME(frame)
+    __RECEIVE_FRAME(frame);
 
     __VALIDATE_FRAME(frame, 1);
 
@@ -30,3 +30,4 @@ des_error des_service(des_context *context, const char password[4], bool *succes
 
     return DES_OK;
 }
+
