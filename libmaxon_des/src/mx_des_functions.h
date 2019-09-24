@@ -9,7 +9,7 @@
 #include "mx_des.h"
 #include "mx_des_comm.h"
 
-#define ___SEND_FRAME(OPCODE, LEN, ...)                \
+#define __SEND_FRAME(OPCODE, LEN, ...)                \
     {                                                  \
         des_frame frame;                               \
         frame.opcode = (uint8_t)OPCODE;                \
@@ -50,7 +50,7 @@
     {                                        \
         assert(context != NULL);             \
                                              \
-        ___SEND_FRAME(OPCODE, 0)             \
+        __SEND_FRAME(OPCODE, 0);             \
                                              \
         return DES_OK;                       \
     }
@@ -60,7 +60,7 @@
     {                                                                           \
         assert(context != NULL);                                                \
                                                                                 \
-        ___SEND_FRAME(OPCODE, 1, PARAM_FN)                                      \
+        __SEND_FRAME(OPCODE, 1, PARAM_FN)                                      \
                                                                                 \
         return DES_OK;                                                          \
     }
@@ -71,7 +71,7 @@
         assert(context != NULL);                                  \
         assert(output != NULL);                                   \
                                                                   \
-        ___SEND_FRAME(OPCODE, 0);                                 \
+        __SEND_FRAME(OPCODE, 0);                                 \
                                                                   \
         des_frame frame;                                          \
                                                                   \
@@ -92,7 +92,7 @@
         assert(context != NULL);                                  \
         assert(output != NULL);                                   \
                                                                   \
-        ___SEND_FRAME(OPCODE, 0);                                 \
+        __SEND_FRAME(OPCODE, 0);                                 \
                                                                   \
         des_frame frame;                                          \
                                                                   \

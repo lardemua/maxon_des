@@ -5,7 +5,7 @@ void cmd_speed(cmd_context *context, int speed)
     des_error err = des_set_velocity(context->des, speed);
     if (err)
     {
-        printf("error setting velocity: %d\n", err);
+        printf("error setting velocity: %s\n", des_strerror(err));
 
         exit(-1);
     }

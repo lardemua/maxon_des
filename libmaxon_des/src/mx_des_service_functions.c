@@ -6,7 +6,7 @@ des_error des_service(des_context *context, const char password[4], bool *succes
     assert(context != NULL);
     assert(success != NULL);
 
-    ___SEND_FRAME(0x10, 2,
+    __SEND_FRAME(0x10, 2,
                   (password[0] << 8) | password[1],
                   (password[0] << 8) | password[1]);
 

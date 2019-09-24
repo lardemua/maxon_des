@@ -13,8 +13,8 @@ des_context *des_init(char *port, des_init_params *params)
 
     if (params == NULL)
     {
-        context->retries = 5;
-        context->sleep = 1000;
+        context->retries = 50;
+        context->sleep = 5000;
     }
     else
     {

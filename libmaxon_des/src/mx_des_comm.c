@@ -1,8 +1,8 @@
 #include "mx_des_comm.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <memory.h>
-#include <time.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -39,10 +39,10 @@ int des_init_comm(des_context *context, const char *portname)
     return DES_OK;
 }
 
-void des_quit_comm(des_context *context)
-{
+void des_quit_comm(des_context *context){
     close(context->port);
 }
+
 
 des_error des_write_byte(des_context *context, uint8_t data)
 {
@@ -104,19 +104,20 @@ des_error des_read_byte(des_context *context, uint8_t *data)
     assert(context != NULL);
     assert(data != NULL);
 
-    for (int i = 0; i < context->retries; i++)
+    for (int i = 0; i < 50; i++)
     {
         int n = read(context->port, data, 1);
         if (n == 1)
             return DES_OK;
-        usleep(context->sleep);
+        usleep(5000);
     }
 
     return DES_READ_TIMEOUT;
 }
 
 des_error des_read_word(des_context *context, uint16_t *data)
-{
+{void des_quit_comm(des_context *context);
+
     assert(context != NULL);
     assert(data != NULL);
 
@@ -124,23 +125,22 @@ des_error des_read_word(des_context *context, uint16_t *data)
 
     uint8_t tmp[2];
 
-    for (int i = 0; i < context->retries; i++)
+    for (int i = 0; i < 50; i++)
     {
-        remaining -= read(context->port, &tmp[2 - remaining], remaining);
+        int n = read(context->port, &tmp[2 - remaining], remaining);
 
-        if (remaining == 0)
-            break;
+        if (n == remaining)
+        {
+            *data = (tmp[0]) | (tmp[1] << 8);
+            return DES_OK;
+        }
 
-        usleep(context->sleep);
+        remaining -= n;
+
+        usleep(5000);
     }
 
-    if (remaining != 0)
-    {
-        return DES_READ_TIMEOUT;
-    }
-
-    *data = (tmp[0]) | (tmp[1] << 8);
-    return DES_OK;
+    return DES_READ_TIMEOUT;
 }
 
 des_error des_read_data(des_context *context, uint16_t *data, int len)
@@ -149,23 +149,12 @@ des_error des_read_data(des_context *context, uint16_t *data, int len)
     assert(data != NULL);
     assert(len >= 0);
 
-    int remaining = len * 2;
+    usleep(20000);
     uint8_t tmp[len * 2];
 
-    for (int i = 0; i < context->retries; i++)
-    {
-        remaining -= read(context->port, tmp, len * 2);
-
-        if (remaining == 0)
-        {
-            break;
-        }
-
-        usleep(context->sleep);
-    }
-
-    if (remaining != 0)
-        return DES_READ_TIMEOUT;
+    int n = read(context->port, tmp, len * 2);
+    if (n != len * 2)
+        return DES_READ_ERROR;
 
     for (int i = 0; i < len; i++)
     {
@@ -189,6 +178,7 @@ des_error des_ack(des_context *context)
 
     if (ack != 'O')
     {
+        printf("[error] des_ack: ack == %c\n", ack);
         return ack == 'F'
                    ? DES_COMM_ACK_FAIL
                    : DES_BAD_RESPONSE;
@@ -228,6 +218,8 @@ des_error des_send_frame(des_context *context, des_frame *frame)
         frame->data = (uint16_t[1]){0x00};
     }
     uint16_t crc = calculate_crc(frame);
+
+    printf("[debug] des_send_frame: sending frame with opcode %x and len %d and crc = %x\n", frame->opcode, frame->len, crc);
 
     des_error err = DES_OK;
 
@@ -294,6 +286,13 @@ des_error des_receive_frame(des_context *context, des_frame *frame)
     if (err)
         return err;
 
+    printf("[debug] des_receive_frame: received frame: op = %d, len = %d, data = { ", frame->opcode, frame->len);
+    for (int i = 0; i < frame->len; i++)
+    {
+        printf("%x ", frame->data[i]);
+    }
+    printf("}\n");
+
     // check the crc and acknoledge
     uint16_t crc;
     err = des_read_word(context, &crc);
@@ -303,6 +302,8 @@ des_error des_receive_frame(des_context *context, des_frame *frame)
     if (crc != ccrc)
     {
         des_write_byte(context, 'F');
+
+        printf("[error] des_receive_frame: bad crc: 0x%x != 0x%x\n", crc, ccrc);
         return DES_RECEIVE_BAD_CRC;
     }
     err = des_write_byte(context, 'O');

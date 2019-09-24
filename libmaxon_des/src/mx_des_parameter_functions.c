@@ -16,7 +16,7 @@ des_error des_read_temp_param(des_context *context, uint16_t param)
     assert(context != NULL);
     assert(param != -1);
 
-    ___SEND_FRAME(0x14, 2, param, 0)
+    __SEND_FRAME(0x14, 2, param, 0)
 
     des_frame frame;
 
