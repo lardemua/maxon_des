@@ -5,6 +5,7 @@ add_executable(maxon_des_cmd
     errors.c
     setting_functions.c
     status_functions.c
+    monitor_functions.c
     main.c)
 
 target_link_libraries(maxon_des_cmd

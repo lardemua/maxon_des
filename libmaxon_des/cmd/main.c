@@ -95,15 +95,16 @@ int main(int argc, char **argv)
     //Setting commands:
     else if (strcmp(argv[1], "speed") == 0)
     {
-        if (argc != 3)
+        if (argc == 4)
         {
-            printf("missing the speed value.\n");
-            return -1;
+            int speed = atoi(argv[2]);
+
+            cmd_speed(&context, speed);
+            return 0;
         }
-
-        int speed = atoi(argv[2]);
-
-        cmd_speed(&context, speed);
+        else {
+            cmd_get_speed(&context);
+        }
     }
     else if (strcmp(argv[1], "current") == 0)
     {

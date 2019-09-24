@@ -41,4 +41,7 @@ void cmd_speed(cmd_context *context, int speed);
 void cmd_current(cmd_context *context,int current);
 void cmd_stop(cmd_context *context);
 
+// Monitor commands
+void cmd_get_speed(cmd_context * context);
+
 #endif // MAXON_DES_CMD_H
