@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     des_context *des_context = des_init(port, NULL);
     if (des_context == NULL)
     {
-        log_fatal("error initializing context\n");
+        printf("error: context failed to initialize\n");
         exit(-1);
     }
 
@@ -60,7 +60,7 @@ int main(int argc, char **argv)
             return -1;
         }
         char *param;
-        strcpy(param,argv[2]);
+        strcpy(param, argv[2]);
         cmd_read_tmp_param(&context, param);
     }
     //Setting commands:

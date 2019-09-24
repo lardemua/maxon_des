@@ -19,4 +19,5 @@ target_include_directories(maxon_des
 target_link_libraries(maxon_des)
 
 install(TARGETS maxon_des
+        LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
