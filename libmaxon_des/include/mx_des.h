@@ -229,9 +229,9 @@ des_error des_stop_motion(des_context *context);
 
 /// Monitor Functions
 
-des_error des_read_velocity(des_context *context);
+des_error des_read_velocity(des_context *context, bool realtime);
 
-des_error des_read_current(des_context *context);
+des_error des_read_current(des_context *context, bool realtime);
 
 /// Data Recording Functions
 
