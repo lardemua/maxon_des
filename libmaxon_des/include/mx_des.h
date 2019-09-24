@@ -13,14 +13,15 @@
 
 typedef struct
 {
-    const char *port;
-    int timeout;
+    int sleep;
     int retries;
 } des_init_params;
 
 typedef struct
 {
     int port;
+    int sleep;
+    int retries;
 } des_context;
 
 typedef struct
@@ -165,7 +166,7 @@ typedef enum
     DES_BAD_RESPONSE,
 } des_error;
 
-des_context *des_init(des_init_params *params);
+des_context *des_init(char *port, des_init_params *params);
 
 void des_quit(des_context *context);
 

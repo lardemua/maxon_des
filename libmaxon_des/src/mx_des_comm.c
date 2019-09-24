@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <memory.h>
+#include <time.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -103,12 +104,12 @@ des_error des_read_byte(des_context *context, uint8_t *data)
     assert(context != NULL);
     assert(data != NULL);
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < context->retries; i++)
     {
         int n = read(context->port, data, 1);
         if (n == 1)
             return DES_OK;
-        usleep(5000);
+        usleep(context->sleep);
     }
 
     return DES_READ_TIMEOUT;
@@ -123,14 +124,14 @@ des_error des_read_word(des_context *context, uint16_t *data)
 
     uint8_t tmp[2];
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < context->retries; i++)
     {
         remaining -= read(context->port, &tmp[2 - remaining], remaining);
 
         if (remaining == 0)
             break;
 
-        usleep(5000);
+        usleep(context->sleep);
     }
 
     if (remaining != 0)
@@ -151,7 +152,7 @@ des_error des_read_data(des_context *context, uint16_t *data, int len)
     int remaining = len * 2;
     uint8_t tmp[len * 2];
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < context->retries; i++)
     {
         remaining -= read(context->port, tmp, len * 2);
 
@@ -160,7 +161,7 @@ des_error des_read_data(des_context *context, uint16_t *data, int len)
             break;
         }
 
-        usleep(5000);
+        usleep(context->sleep);
     }
 
     if (remaining != 0)

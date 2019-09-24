@@ -7,13 +7,24 @@
 #include "mx_des_crc.h"
 #include "mx_des_comm.h"
 
-des_context *des_init(des_init_params *params)
+des_context *des_init(char *port, des_init_params *params)
 {
     des_context *context = malloc(sizeof(des_context));
 
+    if (params == NULL)
+    {
+        context->retries = 5;
+        context->sleep = 1000;
+    }
+    else
+    {
+        context->retries = params->retries;
+        context->sleep = params->sleep;
+    }
+
     des_init_crc();
 
-    des_error err = des_init_comm(context, params->port);
+    des_error err = des_init_comm(context, port);
     if (err)
     {
         free(context);
