@@ -19,12 +19,21 @@ typedef struct
 cmd_context *cmd_init();
 void cmd_quit();
 
-void cmd_version(cmd_context *context);
+
+//Status commands
+void cmd_status(cmd_context *context);
 void cmd_errors(cmd_context *context);
 void cmd_reset(cmd_context *context);
 void cmd_enable(cmd_context *context);
+void cmd_clear_errors(cmd_context *context);
 
+//Parameters commands
+void cmd_version(cmd_context *context);
+void cmd_read_tmp_param(cmd_context *context, char * param);
+
+//Setting commands
 void cmd_speed(cmd_context *context, int speed);
+void cmd_current(cmd_context *context,int current);
 void cmd_stop(cmd_context *context);
 
 #endif // MAXON_DES_CMD_H

@@ -26,7 +26,45 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    if (strcmp(argv[1], "speed") == 0)
+    //Status commands
+    if (strcmp(argv[1], "status") == 0)
+    {
+        cmd_status(&context);
+    }
+    else if (strcmp(argv[1], "errors") == 0)
+    {
+        cmd_errors(&context);
+    }
+    else if (strcmp(argv[1], "clear") == 0)
+    {
+        cmd_clear_errors(&context);
+    }
+    else if (strcmp(argv[1], "reset") == 0)
+    {
+        cmd_reset(&context);
+    }
+    else if (strcmp(argv[1], "enable") == 0)
+    {
+        cmd_enable(&context);
+    }
+    //Parameters commands:
+    else if (strcmp(argv[1], "version") == 0)
+    {
+        cmd_version(&context);
+    }
+    else if (strcmp(argv[1], "param") == 0)
+    {
+        if (argc != 3)
+        {
+            printf("missing the speed value.\n");
+            return -1;
+        }
+        char *param;
+        strcpy(param,argv[2]);
+        cmd_read_tmp_param(&context, param);
+    }
+    //Setting commands:
+    else if (strcmp(argv[1], "speed") == 0)
     {
         if (argc != 3)
         {
@@ -38,17 +76,22 @@ int main(int argc, char **argv)
 
         cmd_speed(&context, speed);
     }
+    else if (strcmp(argv[1], "current") == 0)
+    {
+        if (argc != 3)
+        {
+            printf("missing the current value.\n");
+            return -1;
+        }
+
+        int current = atoi(argv[2]);
+
+        cmd_current(&context, current);
+    }
+
     else if (strcmp(argv[1], "stop") == 0)
     {
         cmd_stop(&context);
-    }
-    else if (strcmp(argv[1], "reset") == 0)
-    {
-        cmd_reset(&context);
-    }
-    else if (strcmp(argv[1], "enable") == 0)
-    {
-        cmd_enable(&context);
     }
 
     // cmd_version(&context);

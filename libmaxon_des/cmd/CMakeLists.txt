@@ -1,7 +1,7 @@
 add_executable(maxon_des_cmd
     cmd.h
     log.c
-    version.c
+    parameters_functions.c
     errors.c
     setting_functions.c
     status_functions.c

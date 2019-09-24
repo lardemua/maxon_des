@@ -11,10 +11,11 @@ DES_FN_NO_PARAM_NO_RET(des_save_temp_param, 0x17)
 
 DES_FN_NO_PARAM_NO_RET(des_set_default_param, 0x1B)
 
-des_error des_read_temp_param(des_context *context, uint16_t param)
+des_error des_read_temp_param(des_context *context, uint16_t param, uint16_t *value)
 {
     assert(context != NULL);
-    assert(param != -1);
+    assert(param >= 0);
+    assert(value !=NULL);
 
     __SEND_FRAME(0x14, 2, param, 0)
 
@@ -23,11 +24,7 @@ des_error des_read_temp_param(des_context *context, uint16_t param)
     __RECEIVE_FRAME(frame);
     __VALIDATE_FRAME(frame, 1);
 
-    if ((frame.data[0] != 'O') && (frame.data[0] != 'F'))
-    {
-        free(frame.data);
-        return DES_BAD_RESPONSE;
-    }
+    *value = frame.data[0];
 
     free(frame.data);
 
