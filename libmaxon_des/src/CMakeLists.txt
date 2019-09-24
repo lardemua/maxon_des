@@ -4,6 +4,8 @@ add_library(maxon_des
     mx_des_service_functions.c
     mx_des_setting_functions.c
     mx_des_status_functions.c
+    mx_des_monitor_functions.c
+    mx_des_recording_functions.c
     mx_des_crc.c
     mx_des_comm.c)
 
