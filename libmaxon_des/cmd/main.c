@@ -76,15 +76,15 @@ int main(int argc, char **argv)
         value = atoi(argv[3]);
         cmd_set_temp_param(&context, param, value);
     }
-    else if (strcmp(argv[1], "reset_temp_params") == 0)
+    else if (strcmp(argv[1], "reset_temp_param") == 0)
     {
         cmd_reset_temp_param(&context);
     }
-    else if (strcmp(argv[1], "save_temp_params") == 0)
+    else if (strcmp(argv[1], "save_temp_param") == 0)
     {
         cmd_save_temp_param(&context);
     }
-    else if (strcmp(argv[1], "read_temp_param") == 0)
+    else if (strcmp(argv[1], "read_all_temp_params") == 0)
     {
         cmd_read_all_temp_param(&context);
     }
