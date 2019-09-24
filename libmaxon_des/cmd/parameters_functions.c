@@ -3,6 +3,12 @@
 #include <string.h>
 #include <assert.h>
 
+typedef struct
+{
+    const char *identifier;
+    const char *name;
+} parameter_detail;
+
 void cmd_version(cmd_context *context)
 {
     assert(context != NULL);
