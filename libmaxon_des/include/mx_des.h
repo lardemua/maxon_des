@@ -233,16 +233,38 @@ des_error des_stop_motion(des_context *context);
 
 /// Monitor Functions
 
-des_error des_read_velocity(des_context *context);
+typedef struct
+{
+    short real;
+    short requested;
+} des_reading;
 
-des_error des_read_current(des_context *context);
+des_error des_read_velocity(des_context *context, bool type, des_reading *reading);
 
+des_error des_read_current(des_context *context, bool type, des_reading *reading);
+
+///
 /// Data Recording Functions
+///
 
-des_error des_setup_recorder(des_context *context);
+/**
+ * @brief Start recording data.
+ * 
+ * Start recording data. The sampling starts immediately after a jump of the setting
+ * value. The recording is stopped after 256 samples. The current jump is only
+ * executed if the DES configured for a digital setting value.
+ * 
+ * @param context
+ * @param sampling Sampling period as a factor of 0.1ms.
+ * @param variable Number of a system parameter or a numbered status
+ *                 variable. If the number is greater than 0x0300 it represents
+ *                 a memory address.
+ * @return des_error 
+ */
+des_error des_setup_recorder(des_context *context, uint16_t sampling, uint16_t variable);
 
-des_error des_record_data(des_context *context);
+des_error des_record_data(des_context *context, uint16_t jump);
 
-des_error des_read_variables(des_context *context);
+des_error des_read_variables(des_context *context, uint16_t *variables, uint16_t *data, int len);
 
 #endif // MAXON_DES_H
