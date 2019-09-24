@@ -1,6 +1,5 @@
 add_library(maxon_des
     mx_des.c
-    mx_des_functions.c
     mx_des_parameter_functions.c
     mx_des_service_functions.c
     mx_des_setting_functions.c

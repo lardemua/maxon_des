@@ -22,6 +22,8 @@ if (ENABLE_TESTS)
   enable_testing()
 endif(ENABLE_TESTS)
 
+add_subdirectory(docs)
+
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_CONTACT "demua <demua@ua.pt>")
 
