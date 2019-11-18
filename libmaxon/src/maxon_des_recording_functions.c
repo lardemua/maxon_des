@@ -1,4 +1,4 @@
-#include "mx_des.h"
+#include "maxon_des.h"
 #include "maxon_des_functions.h"
 
 des_error des_setup_recorder(des_context *context, uint16_t sampling, uint16_t variable)

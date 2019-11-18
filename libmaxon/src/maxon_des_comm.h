@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "mx_des.h"
+#include "maxon_des.h"
 
 typedef struct
 {

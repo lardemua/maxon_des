@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "mx_des.h"
+#include "maxon_des.h"
 #include "maxon_des_comm.h"
 
 #define __SEND_FRAME(OPCODE, LEN, ...)                 \
