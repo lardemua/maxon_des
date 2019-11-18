@@ -1,4 +1,4 @@
-#include "mx_des_crc.h"
+#include "maxon_des_crc.h"
 
 #define P_CCITT 0x1021
 static int crc_tabccitt_init = 0;

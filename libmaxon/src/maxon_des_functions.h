@@ -7,7 +7,7 @@
 #include <stdio.h>
 
 #include "mx_des.h"
-#include "mx_des_comm.h"
+#include "maxon_des_comm.h"
 
 #define __SEND_FRAME(OPCODE, LEN, ...)                 \
     {                                                  \

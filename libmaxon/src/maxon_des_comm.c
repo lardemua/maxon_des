@@ -1,4 +1,4 @@
-#include "mx_des_comm.h"
+#include "maxon_des_comm.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,28 +9,25 @@
 #include <fcntl.h>
 #include <assert.h>
 
-#include "mx_des_crc.h"
+#include "maxon_des_crc.h"
 
-int des_init_comm(des_context *context, const char *portname)
-{
+int des_init_comm(des_context *context, const char *portname) {
     assert(context != NULL);
     assert(portname != NULL);
 
     int port = open(portname, O_RDWR | O_NONBLOCK);
 
-    if (port < 0)
-    {
+    if (port < 0) {
         return -1;
     }
 
     struct termios params = {
-        .c_cflag = B38400 | CS8 | CLOCAL | CREAD,
-        .c_iflag = IGNPAR,
-        .c_oflag = 0};
+            .c_cflag = B38400 | CS8 | CLOCAL | CREAD,
+            .c_iflag = IGNPAR,
+            .c_oflag = 0};
 
     int err = tcsetattr(port, TCSANOW, &params);
-    if (err)
-    {
+    if (err) {
         return -1;
     }
 
@@ -39,44 +36,39 @@ int des_init_comm(des_context *context, const char *portname)
     return DES_OK;
 }
 
-void des_quit_comm(des_context *context){
+void des_quit_comm(des_context *context) {
     close(context->port);
 }
 
 
-des_error des_write_byte(des_context *context, uint8_t data)
-{
+des_error des_write_byte(des_context *context, uint8_t data) {
     assert(context != NULL);
 
     int n = write(context->port, &data, 1);
-    if (n != 1)
-    {
+    if (n != 1) {
         return DES_COMM_ERROR;
     }
 
     return DES_OK;
 }
 
-des_error des_write_word(des_context *context, uint16_t data)
-{
+des_error des_write_word(des_context *context, uint16_t data) {
     assert(context != NULL);
 
     uint8_t tmp[2] = {
-        data & 0xFF,
-        (data >> 8) & 0xFF,
+            data & 0xFF,
+            (data >> 8) & 0xFF,
     };
 
     int n = write(context->port, tmp, 2);
-    if (n != 2)
-    {
+    if (n != 2) {
         return DES_COMM_ERROR;
     }
 
     return DES_OK;
 }
 
-des_error des_write_data(des_context *context, uint16_t *data, int len)
-{
+des_error des_write_data(des_context *context, uint16_t *data, int len) {
     assert(context != NULL);
     assert(data != NULL);
     assert(len >= 0);
@@ -84,28 +76,24 @@ des_error des_write_data(des_context *context, uint16_t *data, int len)
     des_error err;
 
     uint8_t tmp[len * 2];
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
         tmp[i * 2] = data[i];
         tmp[i * 2 + 1] = data[i] >> 8;
     }
 
     int n = write(context->port, tmp, len * 2);
-    if (n != len * 2)
-    {
+    if (n != len * 2) {
         return DES_COMM_ERROR;
     }
 
     return DES_OK;
 }
 
-des_error des_read_byte(des_context *context, uint8_t *data)
-{
+des_error des_read_byte(des_context *context, uint8_t *data) {
     assert(context != NULL);
     assert(data != NULL);
 
-    for (int i = 0; i < 50; i++)
-    {
+    for (int i = 0; i < 50; i++) {
         int n = read(context->port, data, 1);
         if (n == 1)
             return DES_OK;
@@ -115,8 +103,8 @@ des_error des_read_byte(des_context *context, uint8_t *data)
     return DES_READ_TIMEOUT;
 }
 
-des_error des_read_word(des_context *context, uint16_t *data)
-{void des_quit_comm(des_context *context);
+des_error des_read_word(des_context *context, uint16_t *data) {
+    void des_quit_comm(des_context *context);
 
     assert(context != NULL);
     assert(data != NULL);
@@ -125,12 +113,10 @@ des_error des_read_word(des_context *context, uint16_t *data)
 
     uint8_t tmp[2];
 
-    for (int i = 0; i < 50; i++)
-    {
+    for (int i = 0; i < 50; i++) {
         int n = read(context->port, &tmp[2 - remaining], remaining);
 
-        if (n == remaining)
-        {
+        if (n == remaining) {
             *data = (tmp[0]) | (tmp[1] << 8);
             return DES_OK;
         }
@@ -143,8 +129,7 @@ des_error des_read_word(des_context *context, uint16_t *data)
     return DES_READ_TIMEOUT;
 }
 
-des_error des_read_data(des_context *context, uint16_t *data, int len)
-{
+des_error des_read_data(des_context *context, uint16_t *data, int len) {
     assert(context != NULL);
     assert(data != NULL);
     assert(len >= 0);
@@ -156,39 +141,34 @@ des_error des_read_data(des_context *context, uint16_t *data, int len)
     if (n != len * 2)
         return DES_READ_ERROR;
 
-    for (int i = 0; i < len; i++)
-    {
+    for (int i = 0; i < len; i++) {
         data[i] = (tmp[i * 2]) | (tmp[i * 2 + 1] << 8);
     }
 
     return DES_OK;
 }
 
-des_error des_ack(des_context *context)
-{
+des_error des_ack(des_context *context) {
     assert(context != NULL);
 
     uint8_t ack = 'a';
 
     des_error err = des_read_byte(context, &ack);
-    if (err)
-    {
+    if (err) {
         return err;
     }
 
-    if (ack != 'O')
-    {
+    if (ack != 'O') {
         printf("[error] des_ack: ack == %c\n", ack);
         return ack == 'F'
-                   ? DES_COMM_ACK_FAIL
-                   : DES_BAD_RESPONSE;
+               ? DES_COMM_ACK_FAIL
+               : DES_BAD_RESPONSE;
     }
 
     return DES_OK;
 }
 
-uint16_t calculate_crc(des_frame *frame)
-{
+uint16_t calculate_crc(des_frame *frame) {
     assert(frame != NULL);
 
     uint16_t crc = 0;
@@ -196,8 +176,7 @@ uint16_t calculate_crc(des_frame *frame)
     crc = des_crc_update(crc, frame->opcode);
     crc = des_crc_update(crc, frame->len - 1);
 
-    for (int i = 0; i < frame->len; i++)
-    {
+    for (int i = 0; i < frame->len; i++) {
         uint16_t data = frame->data[i];
         crc = des_crc_update(crc, (data >> 8) & 0xFF);
         crc = des_crc_update(crc, data & 0xFF);
@@ -206,20 +185,19 @@ uint16_t calculate_crc(des_frame *frame)
     return crc;
 }
 
-des_error des_send_frame(des_context *context, des_frame *frame)
-{
+des_error des_send_frame(des_context *context, des_frame *frame) {
     assert(context != NULL);
     assert(frame != NULL);
 
     // if the frame has len 0, append a dummy byte
-    if (frame->len == 0)
-    {
+    if (frame->len == 0) {
         frame->len = 1;
-        frame->data = (uint16_t[1]){0x00};
+        frame->data = (uint16_t[1]) {0x00};
     }
     uint16_t crc = calculate_crc(frame);
 
-    printf("[debug] des_send_frame: sending frame with opcode %x and len %d and crc = %x\n", frame->opcode, frame->len, crc);
+    printf("[debug] des_send_frame: sending frame with opcode %x and len %d and crc = %x\n", frame->opcode, frame->len,
+           crc);
 
     des_error err = DES_OK;
 
@@ -254,8 +232,7 @@ des_error des_send_frame(des_context *context, des_frame *frame)
     return DES_OK;
 }
 
-des_error des_receive_frame(des_context *context, des_frame *frame)
-{
+des_error des_receive_frame(des_context *context, des_frame *frame) {
     assert(context != NULL);
     assert(frame != NULL);
 
@@ -287,8 +264,7 @@ des_error des_receive_frame(des_context *context, des_frame *frame)
         return err;
 
     printf("[debug] des_receive_frame: received frame: op = %d, len = %d, data = { ", frame->opcode, frame->len);
-    for (int i = 0; i < frame->len; i++)
-    {
+    for (int i = 0; i < frame->len; i++) {
         printf("%x ", frame->data[i]);
     }
     printf("}\n");
@@ -299,8 +275,7 @@ des_error des_receive_frame(des_context *context, des_frame *frame)
     if (err)
         return err;
     uint16_t ccrc = calculate_crc(frame);
-    if (crc != ccrc)
-    {
+    if (crc != ccrc) {
         des_write_byte(context, 'F');
 
         printf("[error] des_receive_frame: bad crc: 0x%x != 0x%x\n", crc, ccrc);

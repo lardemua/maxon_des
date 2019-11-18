@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.10.2)
 
-project(libmaxon_des
-        VERSION 0.1.0
+project(libmaxon
+        VERSION 0.2.0
         LANGUAGES C)
 
-option(BUILD_CMD    "Build the cli command" ON)
+option(BUILD_CMD    "Build the cli command" OFF)
 option(ENABLE_TESTS "Perform unit tests" OFF)
+option(BUILD_DOCS   "Build the documentation" OFF)
 
 add_subdirectory(src)
 
@@ -22,9 +23,6 @@ if (ENABLE_TESTS)
   enable_testing()
 endif(ENABLE_TESTS)
 
-add_subdirectory(docs)
-
-set(CPACK_GENERATOR DEB)
-set(CPACK_PACKAGE_CONTACT "demua <demua@ua.pt>")
-
-include(CPack)
+if (BUILD_DOCS)
+  add_subdirectory(docs)
+endif(BUILD_DOCS)

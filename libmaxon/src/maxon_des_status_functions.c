@@ -1,4 +1,4 @@
-#include "mx_des_functions.h"
+#include "maxon_des_functions.h"
 
 DES_FN_NO_PARAM_RET_STATUS_STRUCT(des_read_sys_status, 0x01, des_sys_status);
 

@@ -8,24 +8,25 @@
 #ifndef MAXON_DES_H
 #define MAXON_DES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct
-{
+typedef struct {
     int sleep;
     int retries;
 } des_init_params;
 
-typedef struct
-{
+typedef struct {
     int port;
     int sleep;
     int retries;
 } des_context;
 
-typedef struct
-{
+typedef struct {
     // Software version of firmware
     uint16_t software_version;
     // Hardware version of firmware
@@ -38,8 +39,7 @@ typedef struct
 
 typedef union {
     uint16_t value;
-    struct
-    {
+    struct {
         bool encoder_index_status : 1;
         bool hall_sensor_status : 1;
         bool rotor_position_status : 1;
@@ -58,8 +58,7 @@ typedef union {
 
 typedef union {
     uint16_t value;
-    struct
-    {
+    struct {
         bool hall_sensor : 1;
         bool index_processing : 1;
         bool encoder_resolution : 1;
@@ -76,8 +75,7 @@ typedef union {
 
 typedef union {
     uint16_t value;
-    struct
-    {
+    struct {
         bool speed_current_setting : 1;
         bool acceleration_config : 1;
         bool current_regulator : 1;
@@ -95,8 +93,7 @@ typedef union {
     } flags;
 } des_sys_config;
 
-typedef struct
-{
+typedef struct {
     uint16_t baudrate;
     des_sys_config sys_config;
 
@@ -153,8 +150,7 @@ typedef struct
     uint16_t max_angle_mpyn;
 } des_sys_params;
 
-typedef enum
-{
+typedef enum {
     DES_OK = 0,
     DES_COMM_ERROR,
     DES_READ_ERROR,
@@ -166,7 +162,7 @@ typedef enum
     DES_BAD_RESPONSE,
 } des_error;
 
-des_context *des_init(char *port, des_init_params *params);
+des_context *des_init(const char *port, des_init_params *params);
 
 void des_quit(des_context *context);
 
@@ -209,7 +205,7 @@ des_error des_read_addr_var(des_context *context, uint16_t address, bool lword, 
 
 des_error des_set_temp_param(des_context *context, uint16_t param, uint16_t value);
 
-des_error des_read_temp_param(des_context *context, uint16_t param, uint16_t * value);
+des_error des_read_temp_param(des_context *context, uint16_t param, uint16_t *value);
 
 des_error des_reset_temp_param(des_context *context);
 
@@ -233,8 +229,7 @@ des_error des_stop_motion(des_context *context);
 
 /// Monitor Functions
 
-typedef struct
-{
+typedef struct {
     short real;
     short requested;
 } des_reading;
@@ -266,5 +261,9 @@ des_error des_setup_recorder(des_context *context, uint16_t sampling, uint16_t v
 des_error des_record_data(des_context *context, uint16_t jump);
 
 des_error des_read_variables(des_context *context, uint16_t *variables, uint16_t *data, int len);
+
+#ifdef __cplusplus
+}
+#endif // __cplusplus
 
 #endif // MAXON_DES_H

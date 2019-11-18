@@ -1,6 +1,6 @@
 #include "mx_des.h"
-#include "mx_des_functions.h"
-#include "mx_des_comm.h"
+#include "maxon_des_functions.h"
+#include "maxon_des_comm.h"
 
 DES_FN_ONE_PARAM_NO_RET(des_set_velocity, 0x21, int16_t, velocity, velocity)
 
